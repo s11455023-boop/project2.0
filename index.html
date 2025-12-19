@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>記帳小幫手 | 登入</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { margin:0; font-family: 'Noto Sans TC', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 100vh; display: flex; justify-content: center; align-items: center; }
+        .card { background: white; padding: 40px; border-radius: 15px; width: 90%; max-width: 350px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
+        h1 { margin: 0 0 20px 0; color: #333; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px; transition: 0.3s; }
+        button:hover { background: #5a6fd6; }
+        button.secondary { background: white; color: #667eea; border: 1px solid #667eea; }
+        .toggle-text { margin-top: 15px; font-size: 14px; color: #666; cursor: pointer; text-decoration: underline; }
+        
+        /* Loading 遮罩 */
+        #loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 999; color: white; flex-direction: column; }
+        .spinner { width: 30px; height: 30px; border: 4px solid #fff; border-top: 4px solid transparent; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 10px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div id="loading"><div class="spinner"></div><div>處理中...</div></div>
+
+    <div class="card">
+        <h1>💰 記帳登入</h1>
+        
+        <div id="form-login">
+            <input type="text" id="l_acc" placeholder="帳號">
+            <input type="password" id="l_pwd" placeholder="密碼">
+            <button onclick="doLogin()">登入</button>
+            <div class="toggle-text" onclick="toggleMode(false)">沒有帳號？點此註冊</div>
+        </div>
+
+        <div id="form-reg" style="display:none;">
+            <input type="text" id="r_acc" placeholder="設定帳號 (含數字)">
+            <input type="password" id="r_pwd" placeholder="設定密碼 (含數字)">
+            <input type="text" id="r_name" placeholder="您的暱稱">
+            <button onclick="doRegister()">註冊帳號</button>
+            <button class="secondary" onclick="toggleMode(true)">返回登入</button>
+        </div>
+    </div>
+
+    <script>
+        // ⚠️ 請填入您的 Google Apps Script 網址 ⚠️
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbz8-1i4zy20ChiZm1lzafRQo18iTiHN0eYzQnj-B3dQY8AjUgMnyEsEdlwmVV516K2V/exec";
+
+        // 檢查是否已登入，若有則直接跳轉
+        if(localStorage.getItem('acc') && localStorage.getItem('name')) {
+            window.location.href = 'main.html';
+        }
+
+        function toggleMode(isLogin) {
+            document.getElementById('form-login').style.display = isLogin ? 'block' : 'none';
+            document.getElementById('form-reg').style.display = isLogin ? 'none' : 'block';
+        }
+
+        async function doLogin() {
+            let acc = document.getElementById('l_acc').value;
+            let pwd = document.getElementById('l_pwd').value;
+            if(!acc || !pwd) return alert('請輸入完整');
+
+            let res = await callApi({ action: 'login', account: acc, password: pwd });
+            if(res.success) {
+                // 儲存登入資訊到瀏覽器
+                localStorage.setItem('acc', res.account);
+                localStorage.setItem('name', res.username);
+                // 跳轉頁面
+                window.location.href = 'main.html';
+            } else {
+                alert(res.msg);
+            }
+        }
+
+        async function doRegister() {
+            let acc = document.getElementById('r_acc').value;
+            let pwd = document.getElementById('r_pwd').value;
+            let name = document.getElementById('r_name').value;
+            if(!acc || !pwd || !name) return alert('請輸入完整');
+
+            let res = await callApi({ action: 'register', account: acc, password: pwd, username: name }, 'POST');
+            if(res.success) {
+                alert('註冊成功！請登入');
+                toggleMode(true);
+            } else {
+                alert(res.msg);
+            }
+        }
+
+        async function callApi(params, method='GET') {
+            document.getElementById('loading').style.display = 'flex';
+            try {
+                let url = GAS_URL;
+                let opts = { method: method };
+                if(method === 'GET') {
+                    url += '?' + new URLSearchParams(params).toString();
+                } else {
+                    opts.body = JSON.stringify(params);
+                    // 關鍵：使用 text/plain 避開 CORS 檢查
+                    opts.headers = { "Content-Type": "text/plain;charset=utf-8" };
+                }
+                let req = await fetch(url, opts);
+                let json = await req.json();
+                document.getElementById('loading').style.display = 'none';
+                return json;
+            } catch(e) {
+                document.getElementById('loading').style.display = 'none';
+                alert('連線錯誤');
+                return { success: false };
+            }
+        }
+    </script>
+</body>
+</html>
