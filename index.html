@@ -3,52 +3,53 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>記帳系統 - 登入</title>
+  <title>記帳小幫手 - 登入</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     :root { --primary: #4e54c8; --bg-grad: linear-gradient(to right, #4e54c8, #8f94fb); }
     body { font-family: 'Noto Sans TC', sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; background: var(--bg-grad); margin: 0; }
     
     /* 卡片樣式 */
-    .card { background: rgba(255,255,255,0.95); padding: 40px 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 320px; text-align: center; transition: 0.3s; }
-    h2 { color: var(--primary); margin-bottom: 20px; }
-    input { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #eee; border-radius: 25px; outline: none; box-sizing: border-box; font-family: inherit; }
-    input:focus { border-color: #8f94fb; }
-    button { width: 100%; padding: 12px; margin-top: 15px; background: var(--primary); color: white; border: none; border-radius: 25px; cursor: pointer; font-size: 16px; font-family: inherit; transition: 0.3s; }
-    button:hover { background: #3c41a3; transform: scale(1.02); }
-    button:disabled { background: #ccc; cursor: not-allowed; transform: none; }
-    .secondary { background: transparent; color: #666; border: 1px solid #ddd; margin-top: 10px; font-size: 14px; }
-    .secondary:hover { background: #f0f0f0; color: #333; }
+    .card { background: rgba(255,255,255,0.95); padding: 40px 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 320px; text-align: center; transition: 0.3s; position: relative; overflow: hidden; }
+    
+    /* --- 新增：Logo 與 標題區塊 --- */
+    .app-logo {
+      width: 70px; height: 70px; background: #eef2ff; border-radius: 50%; 
+      margin: 0 auto 10px; display: flex; justify-content: center; align-items: center;
+      font-size: 32px; color: var(--primary); box-shadow: 0 4px 10px rgba(78, 84, 200, 0.1);
+    }
+    .app-name { font-size: 22px; font-weight: 700; color: #333; margin-bottom: 5px; }
+    .app-sub { font-size: 13px; color: #777; margin-bottom: 25px; letter-spacing: 1px; }
+
+    /* 輸入框與按鈕 */
+    h2 { color: var(--primary); margin-bottom: 20px; font-size: 18px; border-bottom: 2px solid #f0f0f0; display: inline-block; padding-bottom: 5px;}
+    input { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #eee; border-radius: 25px; outline: none; box-sizing: border-box; font-family: inherit; transition: 0.3s; }
+    input:focus { border-color: #8f94fb; background: #fff; }
+    button { width: 100%; padding: 12px; margin-top: 15px; background: var(--primary); color: white; border: none; border-radius: 25px; cursor: pointer; font-size: 16px; font-family: inherit; transition: 0.3s; box-shadow: 0 4px 10px rgba(78, 84, 200, 0.3); }
+    button:hover { background: #3c41a3; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(78, 84, 200, 0.4); }
+    button:disabled { background: #ccc; cursor: not-allowed; transform: none; box-shadow: none; }
+    .secondary { background: transparent; color: #666; border: 1px solid #ddd; margin-top: 10px; font-size: 14px; box-shadow: none; }
+    .secondary:hover { background: #f0f0f0; color: #333; transform: none; }
     .hint { font-size: 12px; color: #888; text-align: left; margin-left: 10px; }
 
-    /* --- 彈出視窗 (Modal) CSS --- */
-    .modal-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5); z-index: 2000;
-      display: none; justify-content: center; align-items: center;
-      backdrop-filter: blur(3px);
-    }
-    .modal-box {
-      background: white; padding: 30px; border-radius: 15px; width: 280px; text-align: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
+    /* 彈出視窗 CSS */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(3px); }
+    .modal-box { background: white; padding: 30px; border-radius: 15px; width: 280px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-    
     .icon-box { width: 60px; height: 60px; margin: 0 auto 15px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; }
     .success .icon-box { background: #e3f9e5; color: #28a745; border: 2px solid #28a745; }
     .error .icon-box { background: #fdecea; color: #dc3545; border: 2px solid #dc3545; }
-    
     .modal-title { font-weight: bold; font-size: 18px; margin-bottom: 10px; color: #333; }
     .modal-msg { font-size: 14px; color: #666; margin-bottom: 20px; line-height: 1.5; }
     .modal-btn { background: #4e54c8; color: white; padding: 10px 25px; border-radius: 20px; border: none; cursor: pointer; width: 100%; font-size: 15px; }
-    .modal-btn:hover { background: #373b8c; }
   </style>
 </head>
 <body>
 
   <div class="card" id="loginCard">
-    <div style="font-size: 40px; margin-bottom: 10px;">🔐</div>
+    <div class="app-logo">💰</div>
+    <div class="app-name">記帳小幫手</div>
+    <div class="app-sub">輕鬆管理您的個人與團體財務</div>
     
     <h2>帳號登入</h2>
     
@@ -59,7 +60,10 @@
   </div>
 
   <div class="card" id="regCard" style="display:none;">
-    <div style="font-size: 40px; margin-bottom: 10px;">📝</div>
+    <div class="app-logo">📝</div>
+    <div class="app-name">記帳小幫手</div>
+    <div class="app-sub">建立您的專屬帳戶</div>
+
     <h2>註冊帳號</h2>
     <div class="hint">1. 設定顯示名稱 (例如: 小明)</div>
     <input type="text" id="r_username" placeholder="用戶名">
@@ -81,43 +85,32 @@
   </div>
 
 <script>
-  // ★★★ 你的 GAS API 網址 ★★★
+  // ★★★ 你的 GAS API 網址 (請填入) ★★★
   const API_URL = "https://script.google.com/macros/s/AKfycbz8-1i4zy20ChiZm1lzafRQo18iTiHN0eYzQnj-B3dQY8AjUgMnyEsEdlwmVV516K2V/exec";
 
-  // 通用 Fetch 函式
   function callAPI(payload) {
     return fetch(API_URL, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'text/plain;charset=utf-8',
-      },
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify(payload),
     }).then(res => res.json());
   }
 
-  // --- 彈出視窗邏輯 ---
   function showPopup(type, title, msg, callback) {
     var overlay = document.getElementById('myModal');
     var content = document.getElementById('modalContent');
     var icon = document.getElementById('modalIcon');
-    
-    content.className = 'modal-box ' + type; // success or error
-    icon.innerHTML = type === 'success' ? '✔' : '✘'; // 簡單的打勾打叉
+    content.className = 'modal-box ' + type; 
+    icon.innerHTML = type === 'success' ? '✔' : '✘';
     document.getElementById('modalTitle').innerText = title;
     document.getElementById('modalMsg').innerText = msg;
-    
     overlay.style.display = 'flex';
-    
-    // 如果有需要在關閉後執行的動作 (例如跳轉)
     window.currentCallback = callback;
   }
 
   function closeModal() {
     document.getElementById('myModal').style.display = 'none';
-    if(window.currentCallback) {
-      window.currentCallback();
-      window.currentCallback = null;
-    }
+    if(window.currentCallback) { window.currentCallback(); window.currentCallback = null; }
   }
 
   function toggleView() {
@@ -136,17 +129,11 @@
     var originalText = btn.innerText;
     btn.disabled = true; btn.innerText = "驗證中...";
 
-    // 呼叫 API 進行登入
-    callAPI({
-      action: 'login',
-      account: acc,
-      password: pass
-    })
+    callAPI({ action: 'login', account: acc, password: pass })
     .then(res => {
       if(res.status === 'success'){
         localStorage.setItem('currentAccount', res.account);
         localStorage.setItem('currentUsername', res.username);
-        // 登入成功，跳轉到主頁面
         showPopup('success', '登入成功', '歡迎回來，' + res.username + '！', function(){
            window.location.href = "main.html"; 
         });
@@ -166,28 +153,17 @@
     var username = document.getElementById('r_username').value;
     var acc = document.getElementById('r_account').value;
     var pass = document.getElementById('r_pass').value;
-    
     if(!username || !acc || !pass) return showPopup('error', '欄位錯誤', '所有欄位皆為必填');
 
     var btn = document.querySelector('#regCard button');
     btn.disabled = true; btn.innerText = "註冊中...";
 
-    // 呼叫 API 進行註冊
-    callAPI({
-      action: 'register',
-      account: acc,
-      password: pass,
-      username: username
-    })
+    callAPI({ action: 'register', account: acc, password: pass, username: username })
     .then(res => {
       btn.disabled = false; btn.innerText = "立即註冊";
       if(res.status === 'success') {
-        showPopup('success', '註冊成功', '您的帳號已建立，請登入。', function(){
-          toggleView();
-        });
-      } else {
-        showPopup('error', '註冊失敗', res.msg);
-      }
+        showPopup('success', '註冊成功', '您的帳號已建立，請登入。', function(){ toggleView(); });
+      } else { showPopup('error', '註冊失敗', res.msg); }
     })
     .catch(error => {
       console.error(error);
