@@ -16,7 +16,42 @@
     .spinner { width: 40px; height: 40px; border: 4px solid #ddd; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-    /* 篩選器樣式 */
+    /* Layout */
+    /* ★★★ 更新 Header 樣式 ★★★ */
+    .header { 
+      background: white; padding: 15px 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
+      display: flex; justify-content: space-between; align-items: center; 
+      position: sticky; top: 0; z-index: 100; 
+    }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-icon { width: 35px; height: 35px; background: #eef2ff; color: var(--primary); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 20px; }
+    .brand-text { font-size: 18px; font-weight: bold; color: #333; }
+    
+    .btn-logout { background: #f1f2f6; color: #666; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 14px; transition: 0.2s;}
+    .btn-logout:hover { background: #e1e2e6; color: #333; }
+    
+    .container { max-width: 1000px; margin: 20px auto; padding: 0 20px; }
+    
+    /* 導航列 */
+    .nav { display: flex; gap: 15px; margin-bottom: 25px; border-bottom: 2px solid #e1e1e1; }
+    .nav button { padding: 12px 25px; cursor: pointer; background: transparent; border: none; font-size: 16px; color: #999; position: relative; font-family: inherit; font-weight: bold; }
+    .nav button.active { color: var(--primary); }
+    .nav button.active::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 3px; background: var(--primary); }
+    
+    /* 區塊與卡片 */
+    .section { display: none; animation: fadeIn 0.3s ease; }
+    .section.active { display: block; }
+    .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
+    @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } }
+    .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid #eee; }
+    h3 { margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #555; }
+    
+    /* 表單元件 */
+    .form-grid { display: grid; gap: 12px; }
+    input, select { padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; width: 100%; box-sizing: border-box; }
+    .btn-submit { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+    
+    /* 篩選器 */
     .filter-bar {
       background: white; padding: 15px; border-radius: 12px; margin-bottom: 20px;
       border: 1px solid #eee; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
@@ -26,9 +61,18 @@
     .filter-label { font-size: 14px; color: #666; font-weight: bold; }
     .filter-input { padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
     .btn-search { background: var(--primary); color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
-    .btn-search:hover { opacity: 0.9; }
+    
+    /* 表格 */
+    .table-container { background: white; border-radius: 12px; overflow: hidden; border: 1px solid #eee; }
+    table { width: 100%; border-collapse: collapse; }
+    th { background: #f8f9fa; color: #666; padding: 15px; text-align: left; font-size: 13px; }
+    td { padding: 15px; border-bottom: 1px solid #f1f2f6; font-size: 14px; color: #333; }
+    .btn-action { border: none; padding: 5px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; margin-right: 5px; }
+    .btn-edit { background: #ffeaa7; color: #d35400; }
+    .btn-del { background: #fab1a0; color: #c0392b; }
+    .chip { background: #e0e6ed; padding: 4px 10px; border-radius: 15px; font-size: 12px; margin-right: 5px; display: inline-block; margin-bottom: 5px; }
 
-    /* Modal 相關 */
+    /* Modal */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(3px); }
     .modal-box { background: white; padding: 25px; border-radius: 15px; width: 320px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); animation: popIn 0.3s; position: relative; }
     @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -44,33 +88,6 @@
     .modal-btn-group { display: flex; gap: 10px; justify-content: center; margin-top: 20px;}
     .modal-btn { background: #4e54c8; color: white; padding: 10px 20px; border-radius: 20px; border: none; cursor: pointer; flex: 1; font-size: 14px; }
     .modal-btn.cancel { background: #e0e0e0; color: #333; }
-
-    /* Layout */
-    .header { background: white; padding: 15px 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-    .header h1 { margin: 0; font-size: 20px; color: var(--primary); }
-    .btn-logout { background: #ced6e0; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; }
-    .container { max-width: 1000px; margin: 20px auto; padding: 0 20px; }
-    .nav { display: flex; gap: 15px; margin-bottom: 25px; border-bottom: 2px solid #e1e1e1; }
-    .nav button { padding: 12px 25px; cursor: pointer; background: transparent; border: none; font-size: 16px; color: #999; position: relative; font-family: inherit; font-weight: bold; }
-    .nav button.active { color: var(--primary); }
-    .nav button.active::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 3px; background: var(--primary); }
-    .section { display: none; animation: fadeIn 0.3s ease; }
-    .section.active { display: block; }
-    .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
-    @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } }
-    .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid #eee; }
-    h3 { margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #555; }
-    .form-grid { display: grid; gap: 12px; }
-    input, select { padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; width: 100%; box-sizing: border-box; }
-    .btn-submit { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
-    .table-container { background: white; border-radius: 12px; overflow: hidden; border: 1px solid #eee; }
-    table { width: 100%; border-collapse: collapse; }
-    th { background: #f8f9fa; color: #666; padding: 15px; text-align: left; font-size: 13px; }
-    td { padding: 15px; border-bottom: 1px solid #f1f2f6; font-size: 14px; color: #333; }
-    .btn-action { border: none; padding: 5px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; margin-right: 5px; }
-    .btn-edit { background: #ffeaa7; color: #d35400; }
-    .btn-del { background: #fab1a0; color: #c0392b; }
-    .chip { background: #e0e6ed; padding: 4px 10px; border-radius: 15px; font-size: 12px; margin-right: 5px; display: inline-block; margin-bottom: 5px; }
   </style>
 </head>
 <body>
@@ -139,10 +156,13 @@
   </div>
 
   <div class="header">
-    <h1>💰 記帳小幫手</h1>
-    <div>
-      <span style="font-size:14px; color:#666; margin-right:10px;" id="welcomeMsg"></span>
-      <button onclick="logout()" class="btn-logout">登出</button>
+    <div class="brand">
+      <div class="brand-icon">💰</div>
+      <div class="brand-text">記帳小幫手</div>
+    </div>
+    <div style="display:flex; align-items:center;">
+      <span style="font-size:14px; color:#666; margin-right:15px;" id="welcomeMsg"></span>
+      <button onclick="logout()" class="btn-logout">登出 ➔</button>
     </div>
   </div>
 
@@ -153,17 +173,10 @@
     </div>
 
     <div id="personal" class="section active">
-      
       <div class="filter-bar">
         <span style="color:#4e54c8; font-weight:bold;">📅 篩選時段</span>
-        <div class="filter-item">
-          <span class="filter-label">起：</span>
-          <input type="date" id="p_filter_start" class="filter-input">
-        </div>
-        <div class="filter-item">
-          <span class="filter-label">迄：</span>
-          <input type="date" id="p_filter_end" class="filter-input">
-        </div>
+        <div class="filter-item"><span class="filter-label">起：</span><input type="date" id="p_filter_start" class="filter-input"></div>
+        <div class="filter-item"><span class="filter-label">迄：</span><input type="date" id="p_filter_end" class="filter-input"></div>
         <button class="btn-search" onclick="loadPersonalData()">🔍 查詢</button>
       </div>
 
@@ -219,14 +232,8 @@
 
       <div class="filter-bar" id="group_filter_area" style="display:none;">
         <span style="color:#4e54c8; font-weight:bold;">📅 篩選時段</span>
-        <div class="filter-item">
-          <span class="filter-label">起：</span>
-          <input type="date" id="g_filter_start" class="filter-input">
-        </div>
-        <div class="filter-item">
-          <span class="filter-label">迄：</span>
-          <input type="date" id="g_filter_end" class="filter-input">
-        </div>
+        <div class="filter-item"><span class="filter-label">起：</span><input type="date" id="g_filter_start" class="filter-input"></div>
+        <div class="filter-item"><span class="filter-label">迄：</span><input type="date" id="g_filter_end" class="filter-input"></div>
         <button class="btn-search" onclick="loadGroupData()">🔍 查詢</button>
       </div>
 
@@ -256,16 +263,13 @@
   </div>
 
 <script>
-  // ★★★ 你的 GAS API 網址 ★★★
+  // ★★★ 你的 GAS API 網址 (請填入) ★★★
   const API_URL = "https://script.google.com/macros/s/AKfycbz8-1i4zy20ChiZm1lzafRQo18iTiHN0eYzQnj-B3dQY8AjUgMnyEsEdlwmVV516K2V/exec";
 
-  // API 呼叫的通用函式
   function callAPI(payload) {
     return fetch(API_URL, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'text/plain;charset=utf-8',
-      },
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify(payload),
     }).then(res => res.json());
   }
@@ -273,16 +277,11 @@
   var curAcc = localStorage.getItem('currentAccount');
   var curName = localStorage.getItem('currentUsername');
 
-  if(!curAcc || !curName) { 
-    // 未登入則回到首頁 (index.html)
-    window.location.href = "index.html";
-  } else { 
-    document.getElementById('welcomeMsg').innerText = 'Hi, ' + curName; 
-  }
+  if(!curAcc || !curName) { window.location.href = "index.html"; } 
+  else { document.getElementById('welcomeMsg').innerText = 'Hi, ' + curName; }
 
   google.charts.load('current', {'packages':['corechart']});
 
-  // --- Helper Functions ---
   function showLoading(show) { document.getElementById('loading-overlay').style.display = show ? 'flex' : 'none'; }
   
   function showPopup(type, title, msg, callback) {
@@ -322,32 +321,25 @@
     if(type === 'group') document.getElementById('groupEditModal').style.display = 'none';
   }
 
-  // --- 初始化 ---
   window.onload = function() {
-    if(!curAcc) return; // 避免未登入時執行下方邏輯
+    if(!curAcc) return; 
     showTab('personal');
-    
-    // 設定預設日期 (今天)
     var today = new Date();
     document.getElementById('p_date').valueAsDate = today;
     document.getElementById('g_date').valueAsDate = today;
-    
-    // 設定篩選器預設值 (本月1號 ~ 今天)
     var firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
     var formatDate = (d) => d.toISOString().split('T')[0];
-    
     document.getElementById('p_filter_start').value = formatDate(firstDay);
     document.getElementById('p_filter_end').value = formatDate(today);
     document.getElementById('g_filter_start').value = formatDate(firstDay);
     document.getElementById('g_filter_end').value = formatDate(today);
-
     loadPersonalData();
     loadMyGroups();
   };
 
   function logout() {
     localStorage.clear();
-    window.location.href = "index.html";
+    window.location.href = "index.html"; // 登出後導回登入頁
   }
 
   function showTab(id) {
@@ -357,18 +349,12 @@
     document.getElementById(id === 'personal' ? 'tab-p' : 'tab-g').classList.add('active');
   }
 
-  // --- 個人功能 ---
+  // --- Personal Functions ---
   function loadPersonalData() {
     showLoading(true);
     var start = document.getElementById('p_filter_start').value;
     var end = document.getElementById('p_filter_end').value;
-
-    callAPI({
-      action: 'getPersonalRecords',
-      account: curAcc,
-      startDate: start,
-      endDate: end
-    })
+    callAPI({ action: 'getPersonalRecords', account: curAcc, startDate: start, endDate: end })
     .then(data => {
       var html = '';
       if(!data.records || data.records.length === 0) html = '<tr><td colspan="5" style="text-align:center; color:#999;">此區間無資料</td></tr>';
@@ -382,157 +368,65 @@
       document.getElementById('p_list').innerHTML = html;
       drawChart(data.chartData, 'chart_div');
       showLoading(false);
-    })
-    .catch(err => { console.error(err); showLoading(false); });
+    });
   }
 
   function addPersonal() {
     showLoading(true);
-    var data = { 
-      account: curAcc, 
-      date: document.getElementById('p_date').value, 
-      category: document.getElementById('p_cat').value, 
-      amount: document.getElementById('p_amt').value, 
-      note: document.getElementById('p_note').value 
-    };
-    
-    callAPI({ action: 'addPersonalRecord', data: data })
-    .then(() => { 
-      showLoading(false);
-      showPopup('success', '成功', '已新增一筆紀錄', () => {
-         document.getElementById('p_amt').value = ''; 
-         document.getElementById('p_note').value = '';
-         loadPersonalData();
-      });
-    });
+    var data = { account: curAcc, date: document.getElementById('p_date').value, category: document.getElementById('p_cat').value, amount: document.getElementById('p_amt').value, note: document.getElementById('p_note').value };
+    callAPI({ action: 'addPersonalRecord', data: data }).then(() => { showLoading(false); showPopup('success', '成功', '已新增一筆紀錄', () => { document.getElementById('p_amt').value = ''; document.getElementById('p_note').value = ''; loadPersonalData(); }); });
   }
 
   function openEditP(id, date, cat, amt, note) {
-    document.getElementById('edit_p_id').value = id;
-    document.getElementById('edit_p_date').value = date;
-    document.getElementById('edit_p_cat').value = cat;
-    document.getElementById('edit_p_amt').value = amt;
-    document.getElementById('edit_p_note').value = note;
-    document.getElementById('personalEditModal').style.display = 'flex';
+    document.getElementById('edit_p_id').value = id; document.getElementById('edit_p_date').value = date; document.getElementById('edit_p_cat').value = cat; document.getElementById('edit_p_amt').value = amt; document.getElementById('edit_p_note').value = note; document.getElementById('personalEditModal').style.display = 'flex';
   }
-
   function submitPersonalEdit() {
-    var id = document.getElementById('edit_p_id').value;
-    var data = { 
-      date: document.getElementById('edit_p_date').value, 
-      category: document.getElementById('edit_p_cat').value, 
-      amount: document.getElementById('edit_p_amt').value, 
-      note: document.getElementById('edit_p_note').value 
-    };
-    closeEditModal('personal');
-    showLoading(true);
-    
-    callAPI({ action: 'updatePersonalRecord', id: id, data: data })
-    .then(() => {
-      showLoading(false);
-      showPopup('success', '修改成功', '紀錄已更新', () => loadPersonalData());
-    });
+    var id = document.getElementById('edit_p_id').value; var data = { date: document.getElementById('edit_p_date').value, category: document.getElementById('edit_p_cat').value, amount: document.getElementById('edit_p_amt').value, note: document.getElementById('edit_p_note').value };
+    closeEditModal('personal'); showLoading(true);
+    callAPI({ action: 'updatePersonalRecord', id: id, data: data }).then(() => { showLoading(false); showPopup('success', '修改成功', '紀錄已更新', () => loadPersonalData()); });
   }
+  function delP(id) { confirmPopup('確定刪除此紀錄？', function(){ showLoading(true); callAPI({ action: 'deletePersonalRecord', id: id }).then(() => { showLoading(false); showPopup('success', '刪除成功', '', () => loadPersonalData()); }); }); }
 
-  function delP(id) { 
-    confirmPopup('確定刪除此紀錄？', function(){
-      showLoading(true); 
-      callAPI({ action: 'deletePersonalRecord', id: id })
-      .then(() => {
-        showLoading(false);
-        showPopup('success', '刪除成功', '', () => loadPersonalData());
-      }); 
-    });
-  }
-
-  // --- 團體功能 ---
+  // --- Group Functions ---
   function createNewGroup() {
     var name = document.getElementById('new_group_name').value;
     if(!name) return showPopup('error', '錯誤', '請輸入團體名稱');
     showLoading(true);
-    
-    callAPI({ action: 'createGroup', groupName: name, creatorUsername: curName })
-    .then(() => { 
-      showLoading(false);
-      showPopup('success', '建立成功', '團體 ' + name + ' 已建立', () => loadMyGroups());
-    });
+    callAPI({ action: 'createGroup', groupName: name, creatorUsername: curName }).then(() => { showLoading(false); showPopup('success', '建立成功', '團體 ' + name + ' 已建立', () => loadMyGroups()); });
   }
-
   function loadMyGroups() {
-    callAPI({ action: 'getMyGroups', currentUsername: curName })
-    .then(res => {
-      var sel = document.getElementById('group_select');
-      sel.innerHTML = '<option value="">▼ 選擇團體</option>';
-      if(res.data) {
-          res.data.forEach(g => { sel.innerHTML += `<option value="${g.id}">${g.name}</option>`; });
-      }
+    callAPI({ action: 'getMyGroups', currentUsername: curName }).then(res => {
+      var sel = document.getElementById('group_select'); sel.innerHTML = '<option value="">▼ 選擇團體</option>';
+      if(res.data) res.data.forEach(g => { sel.innerHTML += `<option value="${g.id}">${g.name}</option>`; });
     });
   }
-
   function handleGroupChange() {
     var gid = document.getElementById('group_select').value;
-    var memArea = document.getElementById('member_area');
-    var filterArea = document.getElementById('group_filter_area');
-    
-    if(!gid) { 
-      memArea.style.display = 'none'; 
-      filterArea.style.display = 'none';
-      return; 
-    }
-    memArea.style.display = 'block';
-    filterArea.style.display = 'flex';
-    loadGroupMembers(gid);
-    loadGroupData(gid);
+    var memArea = document.getElementById('member_area'); var filterArea = document.getElementById('group_filter_area');
+    if(!gid) { memArea.style.display = 'none'; filterArea.style.display = 'none'; return; }
+    memArea.style.display = 'block'; filterArea.style.display = 'flex';
+    loadGroupMembers(gid); loadGroupData(gid);
   }
-
   function loadGroupMembers(gid) {
-    callAPI({ action: 'getGroupMembers', groupId: gid })
-    .then(res => {
-      var html = '';
-      if(res.data) {
-          res.data.split(',').forEach(m => html += `<span class="chip">👤 ${m.trim()}</span>`);
-      }
+    callAPI({ action: 'getGroupMembers', groupId: gid }).then(res => {
+      var html = ''; if(res.data) res.data.split(',').forEach(m => html += `<span class="chip">👤 ${m.trim()}</span>`);
       document.getElementById('member_list').innerHTML = html;
     });
   }
-
   function addMember() {
-    var gid = document.getElementById('group_select').value;
-    var target = document.getElementById('add_mem_name').value;
+    var gid = document.getElementById('group_select').value; var target = document.getElementById('add_mem_name').value;
     if(!gid || !target) return showPopup('error', '錯誤', '請輸入用戶名');
     showLoading(true);
-    
-    callAPI({ 
-      action: 'addMemberToGroup', 
-      groupId: gid, 
-      targetUsername: target, 
-      requestingUsername: curName 
-    })
-    .then(res => {
-      showLoading(false);
-      if(res.status === 'success') showPopup('success', '成功', res.msg, () => { loadGroupMembers(gid); document.getElementById('add_mem_name').value = ''; });
-      else showPopup('error', '失敗', res.msg);
+    callAPI({ action: 'addMemberToGroup', groupId: gid, targetUsername: target, requestingUsername: curName }).then(res => {
+      showLoading(false); if(res.status === 'success') showPopup('success', '成功', res.msg, () => { loadGroupMembers(gid); document.getElementById('add_mem_name').value = ''; }); else showPopup('error', '失敗', res.msg);
     });
   }
-
   function loadGroupData(gid) {
-    if(!gid) gid = document.getElementById('group_select').value;
-    if(!gid) return;
-    
-    var start = document.getElementById('g_filter_start').value;
-    var end = document.getElementById('g_filter_end').value;
-
+    if(!gid) gid = document.getElementById('group_select').value; if(!gid) return;
+    var start = document.getElementById('g_filter_start').value; var end = document.getElementById('g_filter_end').value;
     showLoading(true);
-    callAPI({ 
-      action: 'getGroupRecords', 
-      groupId: gid, 
-      requestingUsername: curName, 
-      startDate: start, 
-      endDate: end 
-    })
-    .then(data => {
-      var html = '';
-      if(!data.records || data.records.length === 0) html = '<tr><td colspan="6" style="text-align:center;">此區間無資料</td></tr>';
+    callAPI({ action: 'getGroupRecords', groupId: gid, requestingUsername: curName, startDate: start, endDate: end }).then(data => {
+      var html = ''; if(!data.records || data.records.length === 0) html = '<tr><td colspan="6" style="text-align:center;">此區間無資料</td></tr>';
       else {
         data.records.forEach(r => {
           html += `<tr><td>${r.date}</td><td><span class="chip" style="background:white; border:1px solid #eee">${r.user}</span></td>
@@ -541,81 +435,26 @@
           <button class="btn-action btn-del" onclick="delG('${r.id}')">🗑</button></td></tr>`;
         });
       }
-      document.getElementById('g_list').innerHTML = html;
-      drawChart(data.chartData, 'group_chart_div');
-      showLoading(false);
+      document.getElementById('g_list').innerHTML = html; drawChart(data.chartData, 'group_chart_div'); showLoading(false);
     });
   }
-
   function addGroupRec() {
-    var gid = document.getElementById('group_select').value;
-    if(!gid) return showPopup('error', '錯誤', '請先選擇團體');
+    var gid = document.getElementById('group_select').value; if(!gid) return showPopup('error', '錯誤', '請先選擇團體');
     showLoading(true);
-    
-    var data = { 
-      groupId: gid, 
-      user: curName, 
-      date: document.getElementById('g_date').value, 
-      category: document.getElementById('g_cat').value, 
-      amount: document.getElementById('g_amt').value, 
-      note: document.getElementById('g_note').value 
-    };
-    
-    callAPI({ action: 'addGroupRecord', data: data })
-    .then(() => { 
-      showLoading(false);
-      showPopup('success', '成功', '團體紀錄已新增', () => {
-         document.getElementById('g_amt').value = ''; 
-         document.getElementById('g_note').value = '';
-         loadGroupData(gid); 
-      });
-    });
+    var data = { groupId: gid, user: curName, date: document.getElementById('g_date').value, category: document.getElementById('g_cat').value, amount: document.getElementById('g_amt').value, note: document.getElementById('g_note').value };
+    callAPI({ action: 'addGroupRecord', data: data }).then(() => { showLoading(false); showPopup('success', '成功', '團體紀錄已新增', () => { document.getElementById('g_amt').value = ''; document.getElementById('g_note').value = ''; loadGroupData(gid); }); });
   }
-
-  function openEditG(id, date, cat, amt, note) {
-    document.getElementById('edit_g_id').value = id;
-    document.getElementById('edit_g_date').value = date;
-    document.getElementById('edit_g_cat').value = cat;
-    document.getElementById('edit_g_amt').value = amt;
-    document.getElementById('edit_g_note').value = note;
-    document.getElementById('groupEditModal').style.display = 'flex';
-  }
-
+  function openEditG(id, date, cat, amt, note) { document.getElementById('edit_g_id').value = id; document.getElementById('edit_g_date').value = date; document.getElementById('edit_g_cat').value = cat; document.getElementById('edit_g_amt').value = amt; document.getElementById('edit_g_note').value = note; document.getElementById('groupEditModal').style.display = 'flex'; }
   function submitGroupEdit() {
-    var gid = document.getElementById('group_select').value;
-    var id = document.getElementById('edit_g_id').value;
-    var data = { 
-      date: document.getElementById('edit_g_date').value, 
-      category: document.getElementById('edit_g_cat').value, 
-      amount: document.getElementById('edit_g_amt').value, 
-      note: document.getElementById('edit_g_note').value 
-    };
-    closeEditModal('group');
-    showLoading(true);
-    
-    callAPI({ action: 'updateGroupRecord', id: id, data: data })
-    .then(() => {
-      showLoading(false);
-      showPopup('success', '修改成功', '團體紀錄已更新', () => loadGroupData(gid));
-    });
+    var gid = document.getElementById('group_select').value; var id = document.getElementById('edit_g_id').value; var data = { date: document.getElementById('edit_g_date').value, category: document.getElementById('edit_g_cat').value, amount: document.getElementById('edit_g_amt').value, note: document.getElementById('edit_g_note').value };
+    closeEditModal('group'); showLoading(true);
+    callAPI({ action: 'updateGroupRecord', id: id, data: data }).then(() => { showLoading(false); showPopup('success', '修改成功', '團體紀錄已更新', () => loadGroupData(gid)); });
   }
-
-  function delG(id) { 
-    confirmPopup('確定刪除此團體紀錄?', function(){
-      showLoading(true); 
-      callAPI({ action: 'deleteGroupRecord', id: id })
-      .then(() => {
-        showLoading(false);
-        showPopup('success', '刪除成功', '', () => loadGroupData());
-      });
-    });
-  }
-
+  function delG(id) { confirmPopup('確定刪除此團體紀錄?', function(){ showLoading(true); callAPI({ action: 'deleteGroupRecord', id: id }).then(() => { showLoading(false); showPopup('success', '刪除成功', '', () => loadGroupData()); }); }); }
   function drawChart(arr, id) {
     if(!arr || arr.length <= 1) { document.getElementById(id).innerHTML = '<div style="display:flex;justify-content:center;align-items:center;height:100%;color:#ccc;">無數據</div>'; return; }
     new google.visualization.PieChart(document.getElementById(id)).draw(google.visualization.arrayToDataTable(arr), { pieHole: 0.4, chartArea: {width:'90%',height:'80%'}, legend:{position:'bottom'} });
   }
 </script>
 </body>
-</html>
 </html>
