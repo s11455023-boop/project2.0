@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>記帳小幫手 | 系統</title>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { margin:0; font-family: 'Noto Sans TC', sans-serif; background: #f4f6f9; color: #333; padding-bottom: 50px;}
+        /* 頂部導航 */
+        header { background: #667eea; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .user-info { font-weight: bold; }
+        .logout-btn { background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px 15px; border-radius: 20px; cursor: pointer; font-size: 14px; }
+        
+        /* 容器 */
+        .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
+        
+        /* 卡片樣式 */
+        .card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        h3 { margin-top: 0; color: #667eea; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        
+        /* 頁籤 */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 12px; border: none; background: #e0e6ed; border-radius: 8px; cursor: pointer; font-weight: bold; color: #666; }
+        .tab-btn.active { background: #667eea; color: white; box-shadow: 0 4px 10px rgba(102, 126, 234, 0.4); }
+
+        /* 表單元素 */
+        .input-group { display: flex; gap: 10px; margin-bottom: 10px; }
+        input, select { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px; }
+        button.action { width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        button.action:hover { opacity: 0.9; }
+        
+        /* 列表與圖表 */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        td { padding: 10px; border-bottom: 1px solid #eee; font-size: 14px; }
+        .badge { background: #eee; padding: 2px 8px; border-radius: 10px; font-size: 12px; }
+        .del-btn { background: #ff7675; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+
+        #loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); display: none; justify-content: center; align-items: center; z-index: 999; flex-direction: column; }
+        .spinner { width: 30px; height: 30px; border: 4px solid #ccc; border-top: 4px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div id="loading"><div class="spinner"></div></div>
+
+    <header>
+        <div class="user-info">Hi, <span id="display-name">...</span></div>
+        <button class="logout-btn" onclick="logout()">登出</button>
+    </header>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('p')" id="btn-p">個人記帳</button>
+            <button class="tab-btn" onclick="switchTab('g')" id="btn-g">團體記帳</button>
+        </div>
+
+        <div id="view-p">
+            <div class="card">
+                <div class="input-group">
+                    <input type="date" id="p_start">
+                    <input type="date" id="p_end">
+                    <button class="action" style="flex:0.5" onclick="loadPersonal()">查詢</button>
+                </div>
+                <h3>➕ 新增支出</h3>
+                <div class="input-group">
+                    <input type="date" id="p_date">
+                    <select id="p_cat"><option>飲食</option><option>交通</option><option>娛樂</option><option>購物</option></select>
+                </div>
+                <div class="input-group">
+                    <input type="number" id="p_amt" placeholder="金額">
+                    <input type="text" id="p_note" placeholder="備註">
+                </div>
+                <button class="action" onclick="addPersonal()">新增</button>
+            </div>
+
+            <div class="card">
+                <h3>📊 總計: <span id="p_total" style="color:#ff7675">$0</span></h3>
+                <div id="chart_p" style="height:250px;"></div>
+                <div id="list_p"></div>
+            </div>
+        </div>
+
+        <div id="view-g" style="display:none;">
+            <div class="card">
+                <h3>👥 選擇團體</h3>
+                <div class="input-group">
+                    <select id="g_select" onchange="onGroupSelect()"></select>
+                    <button class="action" style="background:#48bb78" onclick="createGroup()">建立新團體</button>
+                </div>
+                <div id="g_invite" style="display:none; margin-top:10px; background:#f0fff4; padding:10px; border-radius:6px;">
+                    <div style="font-size:12px; color:#666;">邀請成員加入此團體：</div>
+                    <div class="input-group" style="margin-bottom:0;">
+                        <input type="text" id="invite_name" placeholder="輸入對方帳號名稱">
+                        <button class="action" style="width:80px;" onclick="inviteMember()">邀請</button>
+                    </div>
+                    <div id="g_mem_list" style="font-size:12px; color:#888; margin-top:5px;"></div>
+                </div>
+            </div>
+
+            <div id="g_content" style="display:none;">
+                <div class="card">
+                    <div class="input-group">
+                        <input type="date" id="g_start"> <input type="date" id="g_end">
+                        <button class="action" style="flex:0.5" onclick="loadGroup()">查詢</button>
+                    </div>
+                    <h3>➕ 團體消費</h3>
+                    <div class="input-group">
+                        <input type="date" id="g_date">
+                        <select id="g_cat"><option>飲食</option><option>公費</option><option>其他</option></select>
+                    </div>
+                    <div class="input-group">
+                        <input type="number" id="g_amt" placeholder="金額">
+                        <input type="text" id="g_note" placeholder="備註">
+                    </div>
+                    <button class="action" onclick="addGroupRecord()">新增紀錄</button>
+                </div>
+
+                <div class="card">
+                    <h3>📊 總計: <span id="g_total" style="color:#ff7675">$0</span></h3>
+                    <div id="chart_g" style="height:250px;"></div>
+                    <div id="list_g"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ⚠️ 請填入與 index.html 相同的 Google Apps Script 網址 ⚠️
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbz8-1i4zy20ChiZm1lzafRQo18iTiHN0eYzQnj-B3dQY8AjUgMnyEsEdlwmVV516K2V/exec";
+        
+        google.charts.load('current', {'packages':['corechart']});
+        
+        // 驗證登入狀態
+        const curAcc = localStorage.getItem('acc');
+        const curName = localStorage.getItem('name');
+        
+        if(!curAcc || !curName) {
+            alert('請先登入');
+            window.location.href = 'index.html';
+        } else {
+            document.getElementById('display-name').innerText = curName;
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+
+        window.onload = function() {
+            initDateFields();
+            loadPersonal();
+        };
+
+        function initDateFields() {
+            const today = new Date().toISOString().split('T')[0];
+            const start = new Date(); start.setDate(1); 
+            const s = start.toISOString().split('T')[0];
+            ['p_date','g_date','p_end','g_end'].forEach(id=>document.getElementById(id).value=today);
+            ['p_start','g_start'].forEach(id=>document.getElementById(id).value=s);
+        }
+
+        // --- 功能切換 ---
+        function switchTab(t) {
+            document.getElementById('view-p').style.display = t=='p'?'block':'none';
+            document.getElementById('view-g').style.display = t=='g'?'block':'none';
+            document.getElementById('btn-p').className = t=='p'?'tab-btn active':'tab-btn';
+            document.getElementById('btn-g').className = t=='g'?'tab-btn active':'tab-btn';
+            if(t=='g') loadMyGroups();
+        }
+
+        // --- API 呼叫 ---
+        async function callApi(params, method='GET') {
+            document.getElementById('loading').style.display = 'flex';
+            try {
+                let url = GAS_URL;
+                let opts = { method: method };
+                if(method === 'GET') {
+                    url += '?' + new URLSearchParams(params).toString();
+                } else {
+                    opts.body = JSON.stringify(params);
+                    opts.headers = { "Content-Type": "text/plain;charset=utf-8" };
+                }
+                let res = await fetch(url, opts);
+                document.getElementById('loading').style.display = 'none';
+                return await res.json();
+            } catch(e) {
+                document.getElementById('loading').style.display = 'none';
+                console.error(e);
+                return null;
+            }
+        }
+
+        // --- 個人邏輯 ---
+        async function loadPersonal() {
+            let res = await callApi({
+                action:'getPersonal', account: curAcc,
+                start: document.getElementById('p_start').value,
+                end: document.getElementById('p_end').value
+            });
+            if(!res) return;
+            
+            document.getElementById('p_total').innerText = '$' + res.total;
+            renderList('list_p', res.records, 'deletePersonal', 'loadPersonal');
+            drawChart('chart_p', res.chartData);
+        }
+
+        async function addPersonal() {
+            let amt = document.getElementById('p_amt').value;
+            if(!amt || amt < 0) return alert('金額錯誤');
+            await callApi({
+                action:'addPersonal', account: curAcc,
+                date: document.getElementById('p_date').value,
+                category: document.getElementById('p_cat').value,
+                amount: amt, note: document.getElementById('p_note').value
+            }, 'POST');
+            document.getElementById('p_amt').value = '';
+            loadPersonal();
+        }
+
+        // --- 團體邏輯 ---
+        async function loadMyGroups() {
+            let res = await callApi({ action:'getMyGroups', username: curName });
+            let sel = document.getElementById('g_select');
+            sel.innerHTML = '<option value="">請選擇團體...</option>';
+            if(res) res.forEach(g => sel.innerHTML += `<option value="${g.id}">${g.name}</option>`);
+        }
+
+        async function createGroup() {
+            let name = prompt("輸入新團體名稱:");
+            if(!name) return;
+            await callApi({ action:'createGroup', groupName:name, creator:curName }, 'POST');
+            loadMyGroups();
+        }
+
+        async function onGroupSelect() {
+            let gid = document.getElementById('g_select').value;
+            let hasVal = !!gid;
+            document.getElementById('g_invite').style.display = hasVal ? 'block' : 'none';
+            document.getElementById('g_content').style.display = hasVal ? 'block' : 'none';
+            if(hasVal) {
+                let res = await callApi({action:'getGroupMembers', groupId:gid});
+                document.getElementById('g_mem_list').innerText = "成員: " + res.members;
+                loadGroup();
+            }
+        }
+
+        async function inviteMember() {
+            let gid = document.getElementById('g_select').value;
+            let target = document.getElementById('invite_name').value;
+            if(!target) return;
+            let res = await callApi({action:'addMember', groupId:gid, target:target, requestingUser:curName}, 'POST');
+            alert(res.msg);
+            if(res.success) {
+                document.getElementById('invite_name').value = '';
+                onGroupSelect();
+            }
+        }
+
+        async function loadGroup() {
+            let gid = document.getElementById('g_select').value;
+            let res = await callApi({
+                action:'getGroupRecords', groupId:gid, username:curName,
+                start: document.getElementById('g_start').value,
+                end: document.getElementById('g_end').value
+            });
+            if(!res) return;
+            document.getElementById('g_total').innerText = '$' + res.total;
+            renderList('list_g', res.records, 'deleteGroupRecord', 'loadGroup');
+            drawChart('chart_g', res.chartData);
+        }
+
+        async function addGroupRecord() {
+            let amt = document.getElementById('g_amt').value;
+            if(!amt || amt < 0) return alert('金額錯誤');
+            await callApi({
+                action:'addGroupRecord', groupId:document.getElementById('g_select').value, user:curName,
+                date: document.getElementById('g_date').value,
+                category: document.getElementById('g_cat').value,
+                amount: amt, note: document.getElementById('g_note').value
+            }, 'POST');
+            document.getElementById('g_amt').value = '';
+            loadGroup();
+        }
+
+        // --- 共用工具 ---
+        async function deleteGeneric(action, id, callbackName) {
+            if(!confirm('確定刪除?')) return;
+            await callApi({action:action, id:id}, 'POST');
+            window[callbackName]();
+        }
+        window.deletePersonal = (id) => deleteGeneric('deletePersonal', id, 'loadPersonal');
+        window.deleteGroupRecord = (id) => deleteGeneric('deleteGroupRecord', id, 'loadGroup');
+
+        function renderList(divId, records, delFunc, reloadFunc) {
+            let html = '<table>';
+            records.forEach(r => {
+                let userTag = r.user ? `<br><span class="badge" style="background:#c3dafe">${r.user}</span>` : '';
+                html += `<tr>
+                    <td>${r.date}<br><span class="badge">${r.cat}</span>${userTag}</td>
+                    <td><b>$${r.amt}</b><br><span style="color:#888;font-size:12px">${r.note}</span></td>
+                    <td style="text-align:right"><button class="del-btn" onclick="${delFunc}('${r.id}')">刪除</button></td>
+                </tr>`;
+            });
+            document.getElementById(divId).innerHTML = html + '</table>';
+        }
+
+        function drawChart(divId, dataArray) {
+            if(dataArray.length <= 1) {
+                document.getElementById(divId).innerHTML = '<div style="text-align:center;padding:30px;color:#999">查無資料</div>';
+                return;
+            }
+            new google.visualization.PieChart(document.getElementById(divId)).draw(
+                google.visualization.arrayToDataTable(dataArray), 
+                { chartArea:{width:'90%',height:'80%'}, legend:{position:'bottom'} }
+            );
+        }
+    </script>
+</body>
+</html>
